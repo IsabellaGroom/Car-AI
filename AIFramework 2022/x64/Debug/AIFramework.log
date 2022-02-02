@@ -1,0 +1,15 @@
+﻿  AIManager.cpp
+  Background.cpp
+  Collidable.cpp
+  CollisionHelper.cpp
+  DDSTextureLoader.cpp
+  DrawableGameObject.cpp
+C:\Users\g016292k\Documents\GitHub\Car-AI\AIFramework 2022\DrawableGameObject.cpp(172,39): warning C4100: 'deltaTime': unreferenced formal parameter
+  main.cpp
+  PickupItem.cpp
+  Vehicle.cpp
+  Waypoint.cpp
+  WaypointManager.cpp
+  Generating Code...
+  LINK : C:\Users\g016292k\Documents\GitHub\Car-AI\AIFramework 2022\x64\Debug\AIFramework.exe not found or not built by the last incremental link; performing full link
+  AIFramework.vcxproj -> C:\Users\g016292k\Documents\GitHub\Car-AI\AIFramework 2022\x64\Debug\AIFramework.exe
