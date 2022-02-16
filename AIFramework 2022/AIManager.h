@@ -26,8 +26,12 @@ protected:
 
 private:
 	vecPickups              m_pickups;
-	Vehicle*				m_pCar = nullptr;
+	Vehicle*				m_pRedCar = nullptr;
+	Vehicle*                m_pBlueCar = nullptr;
 	WaypointManager			m_waypointManager;
-
+	float time;
+	Vector2D                m_RedCarPos;
+	Vector2D                m_BlueCarPos;
+	//TODO: add acceleration = velocity * time
 };
 

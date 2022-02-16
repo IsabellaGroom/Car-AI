@@ -12,7 +12,8 @@ HRESULT	Waypoint::init(ID3D11Device* pd3dDevice, bool isOnTrack, bool checkPoint
 	{
 		setTextureName(L"Resources\\blue.dds");
 	}
-	else {
+	else
+	{
 		setTextureName(L"Resources\\red.dds");
 	}
 

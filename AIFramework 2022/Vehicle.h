@@ -19,8 +19,10 @@ public:
 	virtual void update(const float deltaTime);
 
 	void setMaxSpeed(const float maxSpeed) { m_maxSpeed = maxSpeed; }
+	const float getMaxSpeed() { return m_maxSpeed; }
 	void setCurrentSpeed(const float speed); // a ratio: a value between 0 and 1 (1 being max speed)
 	void setPositionTo(Vector2D positionTo); // a position to move to
+	void arriveTo(Vector2D arrivalPoint); //arrive behaviour
 	void setVehiclePosition(Vector2D position); // the current position - this resets positionTo
 	void setWaypointManager(WaypointManager* wpm);
 	void hasCollided() {}
@@ -33,6 +35,7 @@ protected: // protected methods
 protected: // preotected properties
 	float m_maxSpeed;
 	float m_currentSpeed;
+	float m_velocity;
 	
 	Vector2D m_currentPosition;
 	Vector2D m_startPosition;

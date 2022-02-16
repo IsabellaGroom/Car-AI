@@ -1,6 +1,7 @@
 #include "Vehicle.h"
 
 #define NORMAL_MAX_SPEED 200
+#define DECCELERATION 10
 
 HRESULT	Vehicle::initMesh(ID3D11Device* pd3dDevice, carColour colour)
 {
@@ -31,14 +32,14 @@ void Vehicle::update(const float deltaTime)
 {
 	// consider replacing with force based acceleration / velocity calculations
 	Vector2D vecTo = m_positionTo - m_currentPosition;
-	float velocity = deltaTime * m_currentSpeed;
+	m_velocity = deltaTime * m_currentSpeed;
 
 	float length = (float)vecTo.Length();
 	// if the distance to the end point is less than the car would move, then only move that distance. 
 	if (length > 0) {
 		vecTo.Normalize();
-		if(length > velocity)
-			vecTo *= velocity;
+		if(length > m_velocity)
+			vecTo *= m_velocity;
 		else
 			vecTo *= length;
 
@@ -90,4 +91,15 @@ void Vehicle::setWaypointManager(WaypointManager* wpm)
 	m_waypointManager = wpm;
 }
 
+void Vehicle::arriveTo(Vector2D arrivalPoint)
+{
+	//TODO: slow down upon arrival
+	m_startPosition = m_currentPosition;
+
+	double length = arrivalPoint.Length();
+	float speed = length * DECCELERATION;
+	m_velocity = m_velocity * speed;
+	//Vector2D vector = ((arrivalPoint * speed) / length)
+	m_positionTo = arrivalPoint;
+}
 
