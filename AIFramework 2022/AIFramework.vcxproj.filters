@@ -20,6 +20,9 @@
     </ClCompile>
     <ClCompile Include="Collidable.cpp" />
     <ClCompile Include="CollisionHelper.cpp" />
+    <ClCompile Include="t_Array.cpp" />
+    <ClCompile Include="t_List.cpp" />
+    <ClCompile Include="t_Queue.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AIManager.h" />
@@ -53,6 +56,9 @@
       <Filter>Core %28do not edit%29</Filter>
     </ClInclude>
     <ClInclude Include="CollisionHelper.h" />
+    <ClInclude Include="t_Array.h" />
+    <ClInclude Include="t_List.h" />
+    <ClInclude Include="t_Queue.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\blue.dds">

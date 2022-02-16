@@ -1,15 +1,10 @@
-﻿  AIManager.cpp
-  Background.cpp
-  Collidable.cpp
-  CollisionHelper.cpp
-  DDSTextureLoader.cpp
-  DrawableGameObject.cpp
-C:\Users\g016292k\Documents\GitHub\Car-AI\AIFramework 2022\DrawableGameObject.cpp(172,39): warning C4100: 'deltaTime': unreferenced formal parameter
-  main.cpp
-  PickupItem.cpp
-  Vehicle.cpp
-  Waypoint.cpp
+﻿  t_Array.cpp
+C:\Users\izzyg\Documents\AIFramework 2022\t_Array.cpp(4,17): error C2955: 't_Array': use of class template requires template argument list
+C:\Users\izzyg\Documents\AIFramework 2022\t_Array.h(6): message : see declaration of 't_Array'
+C:\Users\izzyg\Documents\AIFramework 2022\t_Array.cpp(4,10): error C2955: 't_Array': use of class template requires template argument list
+C:\Users\izzyg\Documents\AIFramework 2022\t_Array.h(6): message : see declaration of 't_Array'
+C:\Users\izzyg\Documents\AIFramework 2022\t_Array.cpp(5,1): error C2509: '{ctor}': member function not declared in 't_Array'
+C:\Users\izzyg\Documents\AIFramework 2022\t_Array.h(6): message : see declaration of 't_Array'
+  t_List.cpp
   WaypointManager.cpp
   Generating Code...
-  LINK : C:\Users\g016292k\Documents\GitHub\Car-AI\AIFramework 2022\x64\Debug\AIFramework.exe not found or not built by the last incremental link; performing full link
-  AIFramework.vcxproj -> C:\Users\g016292k\Documents\GitHub\Car-AI\AIFramework 2022\x64\Debug\AIFramework.exe

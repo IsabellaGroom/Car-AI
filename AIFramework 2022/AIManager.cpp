@@ -5,6 +5,7 @@
 #include "Waypoint.h"
 #include "main.h"
 #include "constants.h"
+#include "t_Array.h"
 
 AIManager::AIManager()
 {
@@ -64,7 +65,7 @@ void AIManager::update(const float fDeltaTime)
 {
     for (unsigned int i = 0; i < m_waypointManager.getWaypointCount(); i++) {
         m_waypointManager.getWaypoint(i)->update(fDeltaTime);
-       // AddItemToDrawList(m_waypointManager.getWaypoint(i)); // if you uncomment this, it will display the waypoints
+        //AddItemToDrawList(m_waypointManager.getWaypoint(i)); // if you uncomment this, it will display the waypoints
     }
 
     for (int i = 0; i < m_waypointManager.getQuadpointCount(); i++)
@@ -156,20 +157,22 @@ void AIManager::keyDown(WPARAM param)
             break;
         }
 		case key_s:
-		{
+		{ 
             //Distance between two vectors.
             Vector2D v1(1, 0);
             Vector2D v2(0, 1);
             Vector2D v3 = v1 + v2;
-			break;
+            break;
 		}
         case key_t:
 		{
             break;
         }
         case VK_SPACE:
-            m_pCar->setPositionTo(Vector2D(7,-8));
+        {
+            m_pCar->setPositionTo(Vector2D(7, -8));
             break;
+        }
         // etc
         default:
             break;
@@ -252,7 +255,7 @@ bool AIManager::checkForCollisions()
     // does the car bounding sphere collide with the pickup bounding sphere?
     if (boundingSphereCar.Intersects(boundingSpherePU))
     {
-        OutputDebugStringA("pickup collision\n");
+        OutputDebugStringA("Pickup collision\n");
         m_pickups[0]->hasCollided();
         setRandomPickupPosition(m_pickups[0]);
 

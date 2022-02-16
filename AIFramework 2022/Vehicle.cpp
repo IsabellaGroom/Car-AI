@@ -65,7 +65,7 @@ void Vehicle::setCurrentSpeed(const float speed)
 {
 	m_currentSpeed = m_maxSpeed * speed;
 	m_currentSpeed = max(0, m_currentSpeed);
-	m_currentSpeed = min(1, m_currentSpeed);
+	m_currentSpeed = min(m_maxSpeed, m_currentSpeed);
 }
 
 // set a position to move to

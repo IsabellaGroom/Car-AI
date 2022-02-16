@@ -6,7 +6,6 @@
 #include "Collidable.h"
 #define MAX_SPEED 300
 
-
 enum class carColour
 {
 	redCar,
