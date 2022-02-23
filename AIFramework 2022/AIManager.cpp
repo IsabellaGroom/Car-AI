@@ -6,6 +6,12 @@
 #include "main.h"
 #include "constants.h"
 #include "t_Array.h"
+#include <queue>
+#include <unordered_map>
+#include <functional>
+#include <vector>
+#include <utility>
+#include <string>
 
 AIManager::AIManager()
 {
@@ -151,7 +157,9 @@ void AIManager::mouseUp(int x, int y)
 	if (wp == nullptr)
 		return;
 
+    unordered_map<Waypoint*, Waypoint*> path = pathFinding(wp);
     // steering mode
+   
     m_pRedCar->arriveTo(wp->getPosition());
 }
 
@@ -320,6 +328,38 @@ bool AIManager::checkForCollisions()
     }
 
     return false;
+}
+
+std::unordered_map<Waypoint*, Waypoint*> AIManager::pathFinding(Waypoint* goal)
+{
+    priority_queue<int, Waypoint*, greater<int>> frontier;
+    Waypoint* start = m_waypointManager.getNearestWaypoint(m_RedCarPos);
+    frontier.push(std::make_pair(start,0));
+
+    unordered_map<Waypoint*, Waypoint*> came_from;
+    unordered_map<Waypoint*, double> costSoFar;
+
+    while (!frontier.empty())
+    {
+        Waypoint* current = frontier.top();
+        //frontier.pop();
+
+        if (current == goal)
+        {
+            break;
+        }
+
+        for(Waypoint* neighbours : m_waypointManager.getNeighbouringWaypoints(current))
+        {
+            float costToNeighbour = costSoFar.find(current); //+ costOfEdge
+            if (neighbours != came_from.at(neighbours))
+            {
+                frontier.push(neighbours);
+                came_from.insert(neighbours, current);
+            }
+        }
+    }
+    return came_from;
 }
 
 

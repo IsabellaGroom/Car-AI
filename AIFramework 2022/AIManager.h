@@ -1,6 +1,7 @@
 #pragma once
 
 #include "WaypointManager.h"
+#include <unordered_map>
 
 using namespace std;
 
@@ -19,6 +20,7 @@ public:
 	void	mouseUp(int x, int y);
 	void	keyDown(WPARAM param);
 	void	keyUp(WPARAM param);
+	std::unordered_map<Waypoint*, Waypoint*> pathFinding(Waypoint* goal);
 
 protected:
 	bool	checkForCollisions();
