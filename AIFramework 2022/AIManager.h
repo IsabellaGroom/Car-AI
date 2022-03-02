@@ -21,6 +21,7 @@ public:
 	void	keyDown(WPARAM param);
 	void	keyUp(WPARAM param);
 	std::unordered_map<Waypoint*, Waypoint*> pathFinding(Waypoint* goal);
+	float Heuristic(Waypoint* w1, Waypoint* w2);
 
 protected:
 	bool	checkForCollisions();

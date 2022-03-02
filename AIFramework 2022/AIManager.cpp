@@ -337,7 +337,7 @@ std::unordered_map<Waypoint*, Waypoint*> AIManager::pathFinding(Waypoint* goal)
     frontier.push(std::make_pair(start,0));
 
     unordered_map<Waypoint*, Waypoint*> came_from;
-    unordered_map<Waypoint*, double> costSoFar;
+    unordered_map<Waypoint*, float> costSoFar;
 
     while (!frontier.empty())
     {
@@ -351,15 +351,28 @@ std::unordered_map<Waypoint*, Waypoint*> AIManager::pathFinding(Waypoint* goal)
 
         for(Waypoint* neighbours : m_waypointManager.getNeighbouringWaypoints(current))
         {
-            float costToNeighbour = costSoFar.find(current); //+ costOfEdge
-            if (neighbours != came_from.at(neighbours))
+            for (Waypoint* neighbours : m_waypointManager.getNeighbouringWaypoints(current))
             {
-                frontier.push(neighbours);
-                came_from.insert(neighbours, current);
+                
+                float costToNeighbour = costSoFar.find(current);//+ costOfEdge
+                if (neighbours != came_from.at(neighbours) || costToNeighbour < costSoFar.find(neighbours))
+                {
+
+                    double priority = costToNeighbour + heuristic(neighbours, goal);
+                    costSoFar.insert(neighbours, costToNeighbour);
+                    came_from.insert(neighbours, current);
+                    frontier.push(std::make_pair(neighbours, priority));
+                }
             }
         }
     }
+
     return came_from;
+}
+
+float heuristic(Waypoint* w1, Waypoint* w2)
+{
+    return  abs(w1->getPosition().x - w2->getPosition().x) + abs(w1->getPosition().y - w2->getPosition().y);
 }
 
 
