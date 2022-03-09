@@ -21,7 +21,7 @@ public:
 	void	keyDown(WPARAM param);
 	void	keyUp(WPARAM param);
 	std::unordered_map<Waypoint*, Waypoint*> pathFinding(Waypoint* goal);
-	float Heuristic(Waypoint* w1, Waypoint* w2);
+	float heuristic(Waypoint* w1, Waypoint* w2);
 
 protected:
 	bool	checkForCollisions();
@@ -36,5 +36,7 @@ private:
 	Vector2D                m_RedCarPos;
 	Vector2D                m_BlueCarPos;
 	//TODO: add acceleration = velocity * time
+
+	typedef std::pair<float, Waypoint*> costing;
 };
 

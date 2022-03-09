@@ -1,13 +1,12 @@
 #include "AIManager.h"
+#include "main.h"
 #include "Vehicle.h"
 #include "DrawableGameObject.h"
 #include "PickupItem.h"
 #include "Waypoint.h"
-#include "main.h"
 #include "constants.h"
-#include "t_Array.h"
 #include <queue>
-#include <unordered_map>
+#include "t_Array.h"
 #include <functional>
 #include <vector>
 #include <utility>
@@ -157,7 +156,7 @@ void AIManager::mouseUp(int x, int y)
 	if (wp == nullptr)
 		return;
 
-    unordered_map<Waypoint*, Waypoint*> path = pathFinding(wp);
+ //   unordered_map<Waypoint*, Waypoint*> path = pathFinding(wp);
     // steering mode
    
     m_pRedCar->arriveTo(wp->getPosition());
@@ -218,8 +217,26 @@ void AIManager::keyDown(WPARAM param)
              Vector2D vector = m_RedCarPos + m_BlueCarPos;
              m_pRedCar->setPositionTo(vector * m_pRedCar->getMaxSpeed());
            */
+           
+            //std::unordered_map<Waypoint*, Waypoint*> came_from;
+            //std::list<Waypoint*> path;
+            //came_from = pathFinding(m_waypointManager.getNearestWaypoint(m_BlueCarPos));
+            //  //list put goal in first
+            //Waypoint* traversal = came_from.at(m_waypointManager.getNearestWaypoint(m_BlueCarPos));
+            //while (came_from.at(traversal) != nullptr)
+            //{
+            //    path.push_back(traversal);
+            //    traversal = came_from.at(traversal);
+            //}
+            //
+            //while (true)
+            //{
+            //    m_pRedCar->setPositionTo(path.back()->getPosition());
+            //    path.pop_back();
+            //}
 
-            m_pRedCar->setPositionTo(m_BlueCarPos);
+
+          //  m_pRedCar->setPositionTo(m_BlueCarPos);
             break;
 		}
         case key_t:
@@ -332,45 +349,49 @@ bool AIManager::checkForCollisions()
 
 std::unordered_map<Waypoint*, Waypoint*> AIManager::pathFinding(Waypoint* goal)
 {
-    priority_queue<int, Waypoint*, greater<int>> frontier;
+
+    std::priority_queue<costing, std::vector<costing>, std::greater<costing>> frontier;
     Waypoint* start = m_waypointManager.getNearestWaypoint(m_RedCarPos);
-    frontier.push(std::make_pair(start,0));
+    //Waypoint* start = start;
+    frontier.push(std::make_pair(0, start));
 
     unordered_map<Waypoint*, Waypoint*> came_from;
     unordered_map<Waypoint*, float> costSoFar;
 
+
     while (!frontier.empty())
     {
-        Waypoint* current = frontier.top();
+        std::pair<int, Waypoint*> current = frontier.top();
         //frontier.pop();
 
-        if (current == goal)
+        if (current.second == goal)
         {
             break;
         }
 
-        for(Waypoint* neighbours : m_waypointManager.getNeighbouringWaypoints(current))
+
+        for (Waypoint* neighbours : m_waypointManager.getNeighbouringWaypoints(current.second))
         {
-            for (Waypoint* neighbours : m_waypointManager.getNeighbouringWaypoints(current))
+            for (Waypoint* neighbours : m_waypointManager.getNeighbouringWaypoints(current.second))
             {
-                
-                float costToNeighbour = costSoFar.find(current);//+ costOfEdge
-                if (neighbours != came_from.at(neighbours) || costToNeighbour < costSoFar.find(neighbours))
+                float costToNeighbour = costSoFar.at(current.second);//+ costOfEdge
+                if (came_from.find(neighbours) == came_from.end() || costToNeighbour < costSoFar.at(neighbours))
                 {
 
                     double priority = costToNeighbour + heuristic(neighbours, goal);
-                    costSoFar.insert(neighbours, costToNeighbour);
-                    came_from.insert(neighbours, current);
-                    frontier.push(std::make_pair(neighbours, priority));
+                    costSoFar.insert(std::make_pair(neighbours, costToNeighbour));
+                    came_from.insert(std::make_pair(neighbours, current.second));
+                    frontier.push(std::make_pair(priority, neighbours));
                 }
             }
         }
     }
 
+  
     return came_from;
 }
 
-float heuristic(Waypoint* w1, Waypoint* w2)
+float AIManager::heuristic(Waypoint* w1, Waypoint* w2)
 {
     return  abs(w1->getPosition().x - w2->getPosition().x) + abs(w1->getPosition().y - w2->getPosition().y);
 }
