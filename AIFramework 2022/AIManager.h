@@ -32,9 +32,10 @@ private:
 	Vehicle*				m_pRedCar = nullptr;
 	Vehicle*                m_pBlueCar = nullptr;
 	WaypointManager			m_waypointManager;
-	float time;
+	float speed;
 	Vector2D                m_RedCarPos;
 	Vector2D                m_BlueCarPos;
+	bool isArrive = false;
 	//TODO: add acceleration = velocity * time
 
 	typedef std::pair<float, Waypoint*> costing;

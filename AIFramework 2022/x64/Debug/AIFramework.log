@@ -1,9 +1,9 @@
 ﻿  AIManager.cpp
-C:\Users\g016292k\Documents\GitHub\Car-AI\AIFramework 2022\AIManager.cpp(375,99): warning C4456: declaration of 'neighbours' hides previous local declaration
-C:\Users\g016292k\Documents\GitHub\Car-AI\AIFramework 2022\AIManager.cpp(373,24): message : see declaration of 'neighbours'
-C:\Users\g016292k\Documents\GitHub\Car-AI\AIFramework 2022\AIManager.cpp(373,24): warning C4189: 'neighbours': local variable is initialized but not referenced
-C:\Users\g016292k\Documents\GitHub\Car-AI\AIFramework 2022\AIManager.cpp(396,60): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.28.29910\include\utility(249,16): warning C4244: 'initializing': conversion from '_Ty' to '_Ty1', possible loss of data
+C:\Users\izzyg\Documents\GitHub\Car-AI\AIFramework 2022\AIManager.cpp(384,99): warning C4456: declaration of 'neighbours' hides previous local declaration
+C:\Users\izzyg\Documents\GitHub\Car-AI\AIFramework 2022\AIManager.cpp(382,24): message : see declaration of 'neighbours'
+C:\Users\izzyg\Documents\GitHub\Car-AI\AIFramework 2022\AIManager.cpp(382,24): warning C4189: 'neighbours': local variable is initialized but not referenced
+C:\Users\izzyg\Documents\GitHub\Car-AI\AIFramework 2022\AIManager.cpp(405,60): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\utility(249,16): warning C4244: 'initializing': conversion from '_Ty' to '_Ty1', possible loss of data
           with
           [
               _Ty=int
@@ -12,9 +12,9 @@ C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\1
           [
               _Ty1=float
           ]
-C:\Users\g016292k\Documents\GitHub\Car-AI\AIFramework 2022\AIManager.cpp(356): message : see reference to function template instantiation 'std::pair<float,Waypoint *>::pair<int,Waypoint*,0>(std::pair<int,Waypoint *> &&) noexcept' being compiled
-C:\Users\g016292k\Documents\GitHub\Car-AI\AIFramework 2022\AIManager.cpp(356): message : see reference to function template instantiation 'std::pair<float,Waypoint *>::pair<int,Waypoint*,0>(std::pair<int,Waypoint *> &&) noexcept' being compiled
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.28.29910\include\utility(222,16): warning C4244: 'initializing': conversion from 'const _Ty1' to '_Ty1', possible loss of data
+C:\Users\izzyg\Documents\GitHub\Car-AI\AIFramework 2022\AIManager.cpp(365): message : see reference to function template instantiation 'std::pair<float,Waypoint *>::pair<int,Waypoint*,0>(std::pair<int,Waypoint *> &&) noexcept' being compiled
+C:\Users\izzyg\Documents\GitHub\Car-AI\AIFramework 2022\AIManager.cpp(365): message : see reference to function template instantiation 'std::pair<float,Waypoint *>::pair<int,Waypoint*,0>(std::pair<int,Waypoint *> &&) noexcept' being compiled
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\utility(222,16): warning C4244: 'initializing': conversion from 'const _Ty1' to '_Ty1', possible loss of data
           with
           [
               _Ty1=float
@@ -23,9 +23,9 @@ C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\1
           [
               _Ty1=int
           ]
-C:\Users\g016292k\Documents\GitHub\Car-AI\AIFramework 2022\AIManager.cpp(364): message : see reference to function template instantiation 'std::pair<int,Waypoint *>::pair<float,Waypoint*,0>(const std::pair<float,Waypoint *> &) noexcept' being compiled
-C:\Users\g016292k\Documents\GitHub\Car-AI\AIFramework 2022\AIManager.cpp(364): message : see reference to function template instantiation 'std::pair<int,Waypoint *>::pair<float,Waypoint*,0>(const std::pair<float,Waypoint *> &) noexcept' being compiled
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\14.28.29910\include\utility(249,16): warning C4244: 'initializing': conversion from '_Ty' to '_Ty1', possible loss of data
+C:\Users\izzyg\Documents\GitHub\Car-AI\AIFramework 2022\AIManager.cpp(373): message : see reference to function template instantiation 'std::pair<int,Waypoint *>::pair<float,Waypoint*,0>(const std::pair<float,Waypoint *> &) noexcept' being compiled
+C:\Users\izzyg\Documents\GitHub\Car-AI\AIFramework 2022\AIManager.cpp(373): message : see reference to function template instantiation 'std::pair<int,Waypoint *>::pair<float,Waypoint*,0>(const std::pair<float,Waypoint *> &) noexcept' being compiled
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include\utility(249,16): warning C4244: 'initializing': conversion from '_Ty' to '_Ty1', possible loss of data
           with
           [
               _Ty=double
@@ -34,8 +34,6 @@ C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\VC\Tools\MSVC\1
           [
               _Ty1=float
           ]
-C:\Users\g016292k\Documents\GitHub\Car-AI\AIFramework 2022\AIManager.cpp(384): message : see reference to function template instantiation 'std::pair<float,Waypoint *>::pair<double,Waypoint*,0>(std::pair<double,Waypoint *> &&) noexcept' being compiled
-C:\Users\g016292k\Documents\GitHub\Car-AI\AIFramework 2022\AIManager.cpp(384): message : see reference to function template instantiation 'std::pair<float,Waypoint *>::pair<double,Waypoint*,0>(std::pair<double,Waypoint *> &&) noexcept' being compiled
-  main.cpp
-  Generating Code...
-  AIFramework.vcxproj -> C:\Users\g016292k\Documents\GitHub\Car-AI\AIFramework 2022\x64\Debug\AIFramework.exe
+C:\Users\izzyg\Documents\GitHub\Car-AI\AIFramework 2022\AIManager.cpp(393): message : see reference to function template instantiation 'std::pair<float,Waypoint *>::pair<double,Waypoint*,0>(std::pair<double,Waypoint *> &&) noexcept' being compiled
+C:\Users\izzyg\Documents\GitHub\Car-AI\AIFramework 2022\AIManager.cpp(393): message : see reference to function template instantiation 'std::pair<float,Waypoint *>::pair<double,Waypoint*,0>(std::pair<double,Waypoint *> &&) noexcept' being compiled
+  AIFramework.vcxproj -> C:\Users\izzyg\Documents\GitHub\Car-AI\AIFramework 2022\x64\Debug\AIFramework.exe

@@ -59,7 +59,7 @@ HRESULT AIManager::initialise(ID3D11Device* pd3dDevice)
     if (FAILED(hr))
         return hr;
 
-
+    speed = m_pBlueCar->getMaxSpeed();
 
     // setup the waypoints
     m_waypointManager.createWaypoints(pd3dDevice);
@@ -82,7 +82,6 @@ HRESULT AIManager::initialise(ID3D11Device* pd3dDevice)
 
 void AIManager::update(const float fDeltaTime)
 {
-    time += fDeltaTime;
     m_RedCarPos = m_pRedCar->getPosition();
     m_BlueCarPos = m_pBlueCar->getPosition();
 
@@ -118,18 +117,13 @@ void AIManager::update(const float fDeltaTime)
 		}
 	}
     */
-    if (time > 0.75f)
+    if (isArrive)
     {
+        speed -= 1.0f;
+        m_pBlueCar->setCurrentSpeed(speed);
 
-        Waypoint* waypoint = m_waypointManager.getWaypoint(unsigned int(rand() % m_waypointManager.getWaypointCount() + 1));
-
-        if (waypoint != nullptr /*&& hasArrived == true*/)
-        {
-            AddItemToDrawList(waypoint);
-            m_pBlueCar->setPositionTo(waypoint->getPosition());
-        }
-
-        time = 0.0f;
+        //add check to see if car has arrived
+        //if so isArrive = false;
     }
 
 
@@ -177,10 +171,11 @@ void AIManager::keyUp(WPARAM param)
 
 void AIManager::keyDown(WPARAM param)
 {
-	// hint 65-90 are a-z
+	// hint 65-90 are a-z 
 	const WPARAM key_a = 65;
 	const WPARAM key_s = 83;
-    const WPARAM key_t = 84;
+    const WPARAM key_p = 80;
+    const WPARAM key_f = 70;
 
     switch (param)
     {
@@ -194,17 +189,32 @@ void AIManager::keyDown(WPARAM param)
             OutputDebugStringA("1 pressed \n");
             break;
         }
-        case VK_NUMPAD2:
+        case key_s:
         {
-            OutputDebugStringA("2 pressed \n");
+
+            Waypoint* waypoint = m_waypointManager.getWaypoint(unsigned int(rand() % m_waypointManager.getWaypointCount() + 1));
+
+            if (waypoint != nullptr /*&& hasArrived == true*/)
+            {
+                AddItemToDrawList(waypoint);
+                m_pBlueCar->setPositionTo(waypoint->getPosition());
+            }
+
             break;
         }
         case key_a:
         {
-            
+            Waypoint* waypoint = m_waypointManager.getWaypoint(unsigned int(rand() % m_waypointManager.getWaypointCount() + 1));
+
+            if (waypoint != nullptr /*&& hasArrived == true*/)
+            {
+                AddItemToDrawList(waypoint);
+                m_pBlueCar->setPositionTo(waypoint->getPosition());
+                isArrive = true;
+            }            
             break;
         }
-		case key_s:
+		case key_p:
 		{ 
             /*
             //Distance between two vectors.
@@ -212,37 +222,36 @@ void AIManager::keyDown(WPARAM param)
             Vector2D v2(0, 1);
             Vector2D v3 = v1 + v2;
             */
-            //Seek
+            //Pursuit
            /* attempt at force based seeking
              Vector2D vector = m_RedCarPos + m_BlueCarPos;
              m_pRedCar->setPositionTo(vector * m_pRedCar->getMaxSpeed());
            */
            
-            //std::unordered_map<Waypoint*, Waypoint*> came_from;
-            //std::list<Waypoint*> path;
-            //came_from = pathFinding(m_waypointManager.getNearestWaypoint(m_BlueCarPos));
-            //  //list put goal in first
-            //Waypoint* traversal = came_from.at(m_waypointManager.getNearestWaypoint(m_BlueCarPos));
-            //while (came_from.at(traversal) != nullptr)
-            //{
-            //    path.push_back(traversal);
-            //    traversal = came_from.at(traversal);
-            //}
-            //
-            //while (true)
-            //{
-            //    m_pRedCar->setPositionTo(path.back()->getPosition());
-            //    path.pop_back();
-            //}
+            std::unordered_map<Waypoint*, Waypoint*> came_from;
+            std::list<Waypoint*> path;
+            came_from = pathFinding(m_waypointManager.getNearestWaypoint(m_BlueCarPos));
+            //list put goal in first
+            Waypoint* traversal = came_from.at(m_waypointManager.getNearestWaypoint(m_BlueCarPos));
+            while (came_from.at(traversal) != nullptr)
+            {
+                path.push_back(traversal);
+                traversal = came_from.at(traversal);
+            }
+            
+            while (true)
+            {
+                m_pRedCar->setPositionTo(path.back()->getPosition());
+                path.pop_back();
+            }
 
 
           //  m_pRedCar->setPositionTo(m_BlueCarPos);
             break;
 		}
-        case key_t:
+        case key_f:
 		{
             //flee
-            
             m_pRedCar->setPositionTo(m_RedCarPos - m_BlueCarPos);
 
             break;
