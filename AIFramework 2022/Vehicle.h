@@ -2,8 +2,13 @@
 
 #include "DrawableGameObject.h"
 #include "WaypointManager.h"
+#include "Waypoint.h"
 #include "Vector2D.h"
 #include "Collidable.h"
+#include <algorithm>
+#include <iostream>
+#include <list>
+#include <string>
 #define MAX_SPEED 300
 
 enum class carColour
@@ -26,7 +31,8 @@ public:
 	void setVehiclePosition(Vector2D position); // the current position - this resets positionTo
 	void setWaypointManager(WaypointManager* wpm);
 	void hasCollided() {}
-
+	void seekPath();
+	void setPath(std::list<Waypoint*> path);
 
 
 protected: // protected methods
@@ -36,12 +42,14 @@ protected: // preotected properties
 	float m_maxSpeed;
 	float m_currentSpeed;
 	float m_velocity;
+	float m_deltaTime;
 	
 	Vector2D m_currentPosition;
 	Vector2D m_startPosition;
 	Vector2D m_positionTo;
 	Vector2D m_lastPosition;
 	WaypointManager* m_waypointManager;
+	std::list<Waypoint*> m_path;
 
 };
 

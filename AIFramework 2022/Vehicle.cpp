@@ -24,12 +24,13 @@ HRESULT	Vehicle::initMesh(ID3D11Device* pd3dDevice, carColour colour)
 	setVehiclePosition(Vector2D(0, 0));
 
 	m_lastPosition = Vector2D(0, 0);
-
+	m_deltaTime = 0.0f;
 	return hr;
 }
 
 void Vehicle::update(const float deltaTime)
 {
+	m_deltaTime = deltaTime;
 	// consider replacing with force based acceleration / velocity calculations
 	Vector2D vecTo = m_positionTo - m_currentPosition;
 	m_velocity = deltaTime * m_currentSpeed;
@@ -56,8 +57,13 @@ void Vehicle::update(const float deltaTime)
 
 	// set the current poistion for the drawablegameobject
 	setPosition(Vector2D(m_currentPosition));
-
 	DrawableGameObject::update(deltaTime);
+
+	if (!m_path.empty())
+	{
+		seekPath();
+	}
+
 }
 
 
@@ -103,3 +109,16 @@ void Vehicle::arriveTo(Vector2D arrivalPoint)
 	m_positionTo = arrivalPoint;
 }
 
+void Vehicle::seekPath()
+{
+		setPositionTo(m_path.back()->getPosition());
+		if (m_positionTo.Distance(m_currentPosition) < 2.0)
+		{
+			m_path.pop_back();
+		}
+}
+
+void Vehicle::setPath(std::list<Waypoint*> path)
+{
+	m_path = path;
+}

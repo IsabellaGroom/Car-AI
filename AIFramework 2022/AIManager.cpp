@@ -6,11 +6,11 @@
 #include "Waypoint.h"
 #include "constants.h"
 #include <queue>
-#include "t_Array.h"
 #include <functional>
 #include <vector>
 #include <utility>
 #include <string>
+#include <map>
 
 AIManager::AIManager()
 {
@@ -50,6 +50,7 @@ HRESULT AIManager::initialise(ID3D11Device* pd3dDevice)
     m_pRedCar->setVehiclePosition(Vector2D(xPos, yPos));
     if (FAILED(hr))
         return hr;
+
 
     xPos = 500;
     yPos = -300;
@@ -239,11 +240,10 @@ void AIManager::keyDown(WPARAM param)
                 traversal = came_from.at(traversal);
             }
             
-            while (true)
-            {
-                m_pRedCar->setPositionTo(path.back()->getPosition());
-                path.pop_back();
-            }
+            m_pRedCar->setPath(path);
+               /* m_pRedCar->setPositionTo(path.back()->getPosition());
+                path.pop_back();*/
+            
 
 
           //  m_pRedCar->setPositionTo(m_BlueCarPos);
@@ -367,11 +367,13 @@ std::unordered_map<Waypoint*, Waypoint*> AIManager::pathFinding(Waypoint* goal)
     unordered_map<Waypoint*, Waypoint*> came_from;
     unordered_map<Waypoint*, float> costSoFar;
 
+    came_from.insert(std::make_pair(start,nullptr));
+    costSoFar.insert(std::make_pair(start, 0));
 
     while (!frontier.empty())
     {
         std::pair<int, Waypoint*> current = frontier.top();
-        //frontier.pop();
+        frontier.pop();
 
         if (current.second == goal)
         {
@@ -381,18 +383,33 @@ std::unordered_map<Waypoint*, Waypoint*> AIManager::pathFinding(Waypoint* goal)
 
         for (Waypoint* neighbours : m_waypointManager.getNeighbouringWaypoints(current.second))
         {
-            for (Waypoint* neighbours : m_waypointManager.getNeighbouringWaypoints(current.second))
-            {
-                float costToNeighbour = costSoFar.at(current.second);//+ costOfEdge
+           
+            if (neighbours == current.second) continue;
+                //float costToNeighbour = costSoFar.at(current.second) + 1;   
+
+            float costToNeighbour = 10000000000000000000.0f;
+                /*
+                for (auto it = costSoFar.begin(); it != costSoFar.end(); ++it)
+                    if (it->first == current.second)
+                        return it->first;*/
+
+                std::unordered_map<Waypoint*, float>::iterator it;
+                it = costSoFar.find(current.second);
+                if (it != costSoFar.end())
+                {
+                    costToNeighbour = it->second;
+                }
+
+                costToNeighbour += (neighbours->getPosition() - current.second->getPosition()).Length();
+
                 if (came_from.find(neighbours) == came_from.end() || costToNeighbour < costSoFar.at(neighbours))
                 {
-
                     double priority = costToNeighbour + heuristic(neighbours, goal);
                     costSoFar.insert(std::make_pair(neighbours, costToNeighbour));
                     came_from.insert(std::make_pair(neighbours, current.second));
                     frontier.push(std::make_pair(priority, neighbours));
                 }
-            }
+           
         }
     }
 
