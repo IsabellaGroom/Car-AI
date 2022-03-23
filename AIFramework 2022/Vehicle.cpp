@@ -30,21 +30,43 @@ HRESULT	Vehicle::initMesh(ID3D11Device* pd3dDevice, carColour colour)
 
 void Vehicle::update(const float deltaTime)
 {
+	//acceleration = force / mass
+	//velocity += acceleration * deltatime
+	//velocity = change in space/ change in time
+	//position += velocity * deltatime
+
+	m_acceleration = Vector2D(0, 0);
+
 	m_deltaTime = deltaTime;
-	// consider replacing with force based acceleration / velocity calculations
 	Vector2D vecTo = m_positionTo - m_currentPosition;
-	m_velocity = deltaTime * m_currentSpeed;
+	Vector2D force;
+	//Seek
+	if (m_currentState == SEEK || m_currentState == FLEE)
+	{
+		vecTo.Normalize();
+		Vector2D desiredVelocity = vecTo * m_maxSpeed;
+		force = desiredVelocity - m_velocity;
+	}
+
+	if (m_currentState == FLEE)
+	{
+		force = force.GetReverse();
+	}
+
+	m_acceleration = force / 100.0f;
+	m_velocity += deltaTime * m_acceleration;
+
 
 	float length = (float)vecTo.Length();
 	// if the distance to the end point is less than the car would move, then only move that distance. 
 	if (length > 0) {
 		vecTo.Normalize();
-		if(length > m_velocity)
+		if(length > m_velocity.Length())
 			vecTo *= m_velocity;
 		else
 			vecTo *= length;
 
-		m_currentPosition += vecTo;
+		m_currentPosition += m_velocity;
 	}
 
 	// rotate the object based on its last & current position
@@ -97,7 +119,7 @@ void Vehicle::setWaypointManager(WaypointManager* wpm)
 	m_waypointManager = wpm;
 }
 
-void Vehicle::arriveTo(Vector2D arrivalPoint)
+void Vehicle::ArriveTo(Vector2D arrivalPoint)
 {
 	//TODO: slow down upon arrival
 	m_startPosition = m_currentPosition;
@@ -121,4 +143,17 @@ void Vehicle::seekPath()
 void Vehicle::setPath(std::list<Waypoint*> path)
 {
 	m_path = path;
+}
+
+void Vehicle::StateManager(State desiredState)
+{
+	switch (desiredState)
+	{
+	case SEEK:
+		m_currentState = SEEK;
+		break;
+	case FLEE:
+		m_currentState = FLEE;
+		break;
+	}
 }

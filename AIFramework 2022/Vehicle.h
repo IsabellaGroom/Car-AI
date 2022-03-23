@@ -17,6 +17,14 @@ enum class carColour
 	blueCar,
 };
 
+enum State
+{
+	SEEK,
+	FLEE,
+	PURSUIT,
+	ARRIVE,
+};
+
 class Vehicle : public DrawableGameObject, public Collidable
 {
 public:
@@ -27,13 +35,17 @@ public:
 	const float getMaxSpeed() { return m_maxSpeed; }
 	void setCurrentSpeed(const float speed); // a ratio: a value between 0 and 1 (1 being max speed)
 	void setPositionTo(Vector2D positionTo); // a position to move to
-	void arriveTo(Vector2D arrivalPoint); //arrive behaviour
+
 	void setVehiclePosition(Vector2D position); // the current position - this resets positionTo
 	void setWaypointManager(WaypointManager* wpm);
 	void hasCollided() {}
 	void seekPath();
 	void setPath(std::list<Waypoint*> path);
 
+	//void Seek(Vector2D position); //seek behaviour
+	void ArriveTo(Vector2D arrivalPoint); //arrive behaviour
+	void StateManager(State desiredState);
+	State GetCurrentState() { return m_currentState; };
 
 protected: // protected methods
 
@@ -41,8 +53,10 @@ protected: // protected methods
 protected: // preotected properties
 	float m_maxSpeed;
 	float m_currentSpeed;
-	float m_velocity;
+	Vector2D m_velocity;
 	float m_deltaTime;
+	Vector2D m_acceleration;
+	State m_currentState;
 	
 	Vector2D m_currentPosition;
 	Vector2D m_startPosition;

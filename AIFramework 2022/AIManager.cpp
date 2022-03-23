@@ -89,7 +89,7 @@ void AIManager::update(const float fDeltaTime)
 
     for (unsigned int i = 0; i < m_waypointManager.getWaypointCount(); i++) {
         m_waypointManager.getWaypoint(i)->update(fDeltaTime);
-        //AddItemToDrawList(m_waypointManager.getWaypoint(i)); // if you uncomment this, it will display the waypoints
+        AddItemToDrawList(m_waypointManager.getWaypoint(i)); // if you uncomment this, it will display the waypoints
     }
 
     for (int i = 0; i < m_waypointManager.getQuadpointCount(); i++)
@@ -118,13 +118,21 @@ void AIManager::update(const float fDeltaTime)
 		}
 	}
     */
-    if (isArrive)
-    {
-        speed -= 1.0f;
-        m_pBlueCar->setCurrentSpeed(speed);
 
-        //add check to see if car has arrived
-        //if so isArrive = false;
+    time += fDeltaTime;
+
+    if (m_pBlueCar->GetCurrentState() == SEEK)
+    {
+        if (time >= 2.0f)
+        {
+            Waypoint* waypoint = m_waypointManager.getWaypoint(unsigned int(rand() % m_waypointManager.getWaypointCount() + 1));
+
+            if (waypoint != nullptr /*&& hasArrived == true*/)
+            {
+                m_pBlueCar->setPositionTo(waypoint->getPosition());
+            }
+            time = 0.0f;
+        }
     }
 
 
@@ -154,7 +162,7 @@ void AIManager::mouseUp(int x, int y)
  //   unordered_map<Waypoint*, Waypoint*> path = pathFinding(wp);
     // steering mode
    
-    m_pRedCar->arriveTo(wp->getPosition());
+    m_pRedCar->setPositionTo(wp->getPosition());
 }
 
 void AIManager::keyUp(WPARAM param)
@@ -192,12 +200,12 @@ void AIManager::keyDown(WPARAM param)
         }
         case key_s:
         {
-
             Waypoint* waypoint = m_waypointManager.getWaypoint(unsigned int(rand() % m_waypointManager.getWaypointCount() + 1));
 
             if (waypoint != nullptr /*&& hasArrived == true*/)
             {
                 AddItemToDrawList(waypoint);
+                m_pBlueCar->StateManager(SEEK);
                 m_pBlueCar->setPositionTo(waypoint->getPosition());
             }
 
@@ -231,11 +239,13 @@ void AIManager::keyDown(WPARAM param)
            
             std::unordered_map<Waypoint*, Waypoint*> came_from;
             std::list<Waypoint*> path;
+            
             came_from = pathFinding(m_waypointManager.getNearestWaypoint(m_BlueCarPos));
             //list put goal in first
             Waypoint* traversal = came_from.at(m_waypointManager.getNearestWaypoint(m_BlueCarPos));
             while (came_from.at(traversal) != nullptr)
             {
+              //  AddItemToDrawList(traversal);
                 path.push_back(traversal);
                 traversal = came_from.at(traversal);
             }
@@ -252,8 +262,8 @@ void AIManager::keyDown(WPARAM param)
         case key_f:
 		{
             //flee
-            m_pRedCar->setPositionTo(m_RedCarPos - m_BlueCarPos);
-
+            m_pBlueCar->StateManager(FLEE);
+            m_pBlueCar->setPositionTo(m_RedCarPos);
             break;
         }
         case VK_SPACE:

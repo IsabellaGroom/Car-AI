@@ -22,7 +22,7 @@ public:
 	void	keyUp(WPARAM param);
 	std::unordered_map<Waypoint*, Waypoint*> pathFinding(Waypoint* goal);
 	float heuristic(Waypoint* w1, Waypoint* w2);
-
+	float time;
 protected:
 	bool	checkForCollisions();
 	void	setRandomPickupPosition(PickupItem* pickup);
