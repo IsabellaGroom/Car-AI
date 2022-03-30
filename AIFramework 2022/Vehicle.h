@@ -23,6 +23,7 @@ enum State
 	FLEE,
 	PURSUIT,
 	ARRIVE,
+	PATH,
 };
 
 class Vehicle : public DrawableGameObject, public Collidable
@@ -42,7 +43,11 @@ public:
 	void seekPath();
 	void setPath(std::list<Waypoint*> path);
 
-	//void Seek(Vector2D position); //seek behaviour
+	//states
+	void Seek();
+	void Flee();
+	void Arrive();
+	void tempPath();
 	void ArriveTo(Vector2D arrivalPoint); //arrive behaviour
 	void StateManager(State desiredState);
 	State GetCurrentState() { return m_currentState; };
@@ -57,6 +62,8 @@ protected: // preotected properties
 	float m_deltaTime;
 	Vector2D m_acceleration;
 	State m_currentState;
+	bool m_isforce = true;
+	Vector2D m_vecTo;
 	
 	Vector2D m_currentPosition;
 	Vector2D m_startPosition;

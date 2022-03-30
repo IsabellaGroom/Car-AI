@@ -34,39 +34,30 @@ void Vehicle::update(const float deltaTime)
 	//velocity += acceleration * deltatime
 	//velocity = change in space/ change in time
 	//position += velocity * deltatime
-
-	m_acceleration = Vector2D(0, 0);
-
 	m_deltaTime = deltaTime;
-	Vector2D vecTo = m_positionTo - m_currentPosition;
-	Vector2D force;
-	//Seek
-	if (m_currentState == SEEK || m_currentState == FLEE)
-	{
-		vecTo.Normalize();
-		Vector2D desiredVelocity = vecTo * m_maxSpeed;
-		force = desiredVelocity - m_velocity;
-	}
-
-	if (m_currentState == FLEE)
-	{
-		force = force.GetReverse();
-	}
-
-	m_acceleration = force / 100.0f;
-	m_velocity += deltaTime * m_acceleration;
-
-
-	float length = (float)vecTo.Length();
+	m_acceleration = Vector2D(0, 0);
+	m_vecTo = m_positionTo - m_currentPosition;
+	
+	StateManager(m_currentState);
+	float length = (float)m_vecTo.Length();
 	// if the distance to the end point is less than the car would move, then only move that distance. 
 	if (length > 0) {
-		vecTo.Normalize();
+		m_vecTo.Normalize();
 		if(length > m_velocity.Length())
-			vecTo *= m_velocity;
+			m_vecTo *= m_velocity;
 		else
-			vecTo *= length;
+			m_vecTo *= length;
 
-		m_currentPosition += m_velocity;
+		if (m_isforce)
+		{
+			m_currentPosition += m_velocity;
+		}
+		else
+		{
+			m_currentPosition += m_vecTo;
+		}
+
+	
 	}
 
 	// rotate the object based on its last & current position
@@ -151,9 +142,77 @@ void Vehicle::StateManager(State desiredState)
 	{
 	case SEEK:
 		m_currentState = SEEK;
+		m_isforce = true;
+		Seek();
 		break;
 	case FLEE:
 		m_currentState = FLEE;
+		m_isforce = true;
+		Flee();
+		break;
+	case PATH:
+		m_currentState = PATH;
+		m_isforce = false;
+		tempPath();
+		break;
+	case ARRIVE:
+		m_currentState = ARRIVE;
+		m_isforce = true;
+		Arrive();
 		break;
 	}
+}
+
+void Vehicle::Seek()
+{
+    m_vecTo;
+	Vector2D force;
+
+	m_vecTo.Normalize();
+	Vector2D desiredVelocity = m_vecTo * m_maxSpeed;
+	force = desiredVelocity - m_velocity;
+
+	m_acceleration = force / 100.0f;
+	m_velocity += m_deltaTime * m_acceleration;
+
+}
+
+void Vehicle::Flee()
+{
+
+    m_vecTo = m_positionTo - m_currentPosition;
+	Vector2D force;
+
+	m_vecTo.Normalize();
+	Vector2D desiredVelocity = m_vecTo * m_maxSpeed;
+	force = desiredVelocity - m_velocity;
+
+	force = force.GetReverse();
+
+	m_acceleration = force / 100.0f;
+	m_velocity += m_deltaTime * m_acceleration;
+}
+
+void Vehicle::tempPath()
+{
+	Vector2D vecTo = m_positionTo - m_currentPosition;
+	m_velocity.x += m_deltaTime * m_currentSpeed;
+	m_velocity.y += m_deltaTime * m_currentSpeed;
+}
+
+void Vehicle::Arrive()
+{
+	m_vecTo = m_positionTo - m_currentPosition;
+	Vector2D force;
+	double magnitude = m_vecTo.Length();
+	float speed = magnitude * DECCELERATION;
+
+	m_vecTo.Normalize();
+	Vector2D desiredVelocity = m_vecTo * speed;
+	desiredVelocity = desiredVelocity / magnitude;
+
+	force = desiredVelocity - m_velocity;
+
+	m_acceleration = force / 100.0f;
+	m_velocity += m_deltaTime * m_acceleration;
 }

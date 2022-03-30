@@ -202,7 +202,7 @@ void AIManager::keyDown(WPARAM param)
         {
             Waypoint* waypoint = m_waypointManager.getWaypoint(unsigned int(rand() % m_waypointManager.getWaypointCount() + 1));
 
-            if (waypoint != nullptr /*&& hasArrived == true*/)
+            if (waypoint != nullptr)
             {
                 AddItemToDrawList(waypoint);
                 m_pBlueCar->StateManager(SEEK);
@@ -215,11 +215,12 @@ void AIManager::keyDown(WPARAM param)
         {
             Waypoint* waypoint = m_waypointManager.getWaypoint(unsigned int(rand() % m_waypointManager.getWaypointCount() + 1));
 
-            if (waypoint != nullptr /*&& hasArrived == true*/)
+            if (waypoint != nullptr )
             {
                 AddItemToDrawList(waypoint);
+                m_pBlueCar->StateManager(ARRIVE);
                 m_pBlueCar->setPositionTo(waypoint->getPosition());
-                isArrive = true;
+     
             }            
             break;
         }
@@ -240,17 +241,18 @@ void AIManager::keyDown(WPARAM param)
             std::unordered_map<Waypoint*, Waypoint*> came_from;
             std::list<Waypoint*> path;
             
-            came_from = pathFinding(m_waypointManager.getNearestWaypoint(m_BlueCarPos));
+            came_from = pathFinding(m_waypointManager.getNearestWaypoint(m_pickups[0]->getPosition()));
             //list put goal in first
-            Waypoint* traversal = came_from.at(m_waypointManager.getNearestWaypoint(m_BlueCarPos));
+            Waypoint* traversal = m_waypointManager.getNearestWaypoint(m_pickups[0]->getPosition());
             while (came_from.at(traversal) != nullptr)
             {
               //  AddItemToDrawList(traversal);
                 path.push_back(traversal);
                 traversal = came_from.at(traversal);
             }
-            
+           
             m_pRedCar->setPath(path);
+            m_pRedCar->StateManager(PATH);
                /* m_pRedCar->setPositionTo(path.back()->getPosition());
                 path.pop_back();*/
             

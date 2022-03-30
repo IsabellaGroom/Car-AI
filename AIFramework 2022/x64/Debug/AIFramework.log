@@ -1,1 +1,4 @@
-﻿  AIFramework.vcxproj -> C:\Users\g016292k\Documents\GitHub\Car-AI\AIFramework 2022\x64\Debug\AIFramework.exe
+﻿  Vehicle.cpp
+C:\Users\g016292k\Documents\GitHub\Car-AI\AIFramework 2022\Vehicle.cpp(119,14): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\g016292k\Documents\GitHub\Car-AI\AIFramework 2022\Vehicle.cpp(208,14): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  AIFramework.vcxproj -> C:\Users\g016292k\Documents\GitHub\Car-AI\AIFramework 2022\x64\Debug\AIFramework.exe
