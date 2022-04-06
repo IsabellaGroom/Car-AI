@@ -89,7 +89,7 @@ void AIManager::update(const float fDeltaTime)
 
     for (unsigned int i = 0; i < m_waypointManager.getWaypointCount(); i++) {
         m_waypointManager.getWaypoint(i)->update(fDeltaTime);
-        AddItemToDrawList(m_waypointManager.getWaypoint(i)); // if you uncomment this, it will display the waypoints
+        //AddItemToDrawList(m_waypointManager.getWaypoint(i)); // if you uncomment this, it will display the waypoints
     }
 
     for (int i = 0; i < m_waypointManager.getQuadpointCount(); i++)
@@ -121,19 +121,19 @@ void AIManager::update(const float fDeltaTime)
 
     time += fDeltaTime;
 
-    if (m_pBlueCar->GetCurrentState() == SEEK)
-    {
-        if (time >= 2.0f)
-        {
-            Waypoint* waypoint = m_waypointManager.getWaypoint(unsigned int(rand() % m_waypointManager.getWaypointCount() + 1));
+    //if (m_pBlueCar->GetCurrentState() == SEEK)
+    //{
+    //    if (time >= 2.0f)
+    //    {
+    //        Waypoint* waypoint = m_waypointManager.getWaypoint(unsigned int(rand() % m_waypointManager.getWaypointCount() + 1));
 
-            if (waypoint != nullptr /*&& hasArrived == true*/)
-            {
-                m_pBlueCar->setPositionTo(waypoint->getPosition());
-            }
-            time = 0.0f;
-        }
-    }
+    //        if (waypoint != nullptr /*&& hasArrived == true*/)
+    //        {
+    //            m_pBlueCar->setPositionTo(waypoint->getPosition());
+    //        }
+    //        time = 0.0f;
+    //    }
+    //}
 
 
     // update and draw the car (and check for pickup collisions)
@@ -218,8 +218,8 @@ void AIManager::keyDown(WPARAM param)
             if (waypoint != nullptr )
             {
                 AddItemToDrawList(waypoint);
-                m_pBlueCar->StateManager(ARRIVE);
                 m_pBlueCar->setPositionTo(waypoint->getPosition());
+                m_pBlueCar->StateManager(ARRIVE);
      
             }            
             break;

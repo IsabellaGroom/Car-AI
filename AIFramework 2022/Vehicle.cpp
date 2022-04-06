@@ -165,7 +165,7 @@ void Vehicle::StateManager(State desiredState)
 
 void Vehicle::Seek()
 {
-    m_vecTo;
+    m_vecTo = m_positionTo - m_currentPosition;
 	Vector2D force;
 
 	m_vecTo.Normalize();
@@ -206,13 +206,18 @@ void Vehicle::Arrive()
 	Vector2D force;
 	double magnitude = m_vecTo.Length();
 	float speed = magnitude * DECCELERATION;
+	/*if (magnitude < 1.0f)
+	{
+		m_velocity = Vector2D(0,0);
+		m_acceleration = Vector2D(0, 0);
+	}*/
+		m_vecTo.Normalize();
+		Vector2D desiredVelocity = m_vecTo * speed;
+		desiredVelocity = desiredVelocity / magnitude;
 
-	m_vecTo.Normalize();
-	Vector2D desiredVelocity = m_vecTo * speed;
-	desiredVelocity = desiredVelocity / magnitude;
+		force = desiredVelocity - m_velocity;
+		force = force * 10;
+		m_acceleration = force / 100.0f;
+		m_velocity += m_deltaTime * m_acceleration;
 
-	force = desiredVelocity - m_velocity;
-
-	m_acceleration = force / 100.0f;
-	m_velocity += m_deltaTime * m_acceleration;
 }
