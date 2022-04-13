@@ -1,7 +1,7 @@
 #include "Vehicle.h"
 
 #define NORMAL_MAX_SPEED 200
-#define DECCELERATION 10
+#define DECCELERATION 5
 
 HRESULT	Vehicle::initMesh(ID3D11Device* pd3dDevice, carColour colour)
 {
@@ -202,22 +202,25 @@ void Vehicle::tempPath()
 
 void Vehicle::Arrive()
 {
-	m_vecTo = m_positionTo - m_currentPosition;
 	Vector2D force;
+	m_vecTo = m_positionTo - m_currentPosition;
 	double magnitude = m_vecTo.Length();
-	float speed = magnitude * DECCELERATION;
-	/*if (magnitude < 1.0f)
+    float speed = m_maxSpeed * (magnitude / 10.0f);
+	
+
+	m_vecTo.Normalize();
+	Vector2D desiredVelocity = m_vecTo * speed;
+	desiredVelocity = desiredVelocity / magnitude;
+
+	if (magnitude < 10.0f)
 	{
-		m_velocity = Vector2D(0,0);
-		m_acceleration = Vector2D(0, 0);
-	}*/
-		m_vecTo.Normalize();
-		Vector2D desiredVelocity = m_vecTo * speed;
-		desiredVelocity = desiredVelocity / magnitude;
+		desiredVelocity = Vector2D(0, 0);
+	}
+	desiredVelocity.Normalize();
+	force = desiredVelocity - m_velocity;
 
-		force = desiredVelocity - m_velocity;
-		force = force * 10;
-		m_acceleration = force / 100.0f;
-		m_velocity += m_deltaTime * m_acceleration;
-
+	m_acceleration = force / 50.0f;
+	m_acceleration = m_acceleration * 200.0f;
+	m_velocity += m_deltaTime * m_acceleration;
+	
 }

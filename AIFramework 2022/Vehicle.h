@@ -9,7 +9,7 @@
 #include <iostream>
 #include <list>
 #include <string>
-#define MAX_SPEED 300
+#define MAX_SPEED 200
 
 enum class carColour
 {

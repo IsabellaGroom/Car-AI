@@ -33,6 +33,7 @@ private:
 	Vehicle*                m_pBlueCar = nullptr;
 	WaypointManager			m_waypointManager;
 	float speed;
+	bool isWander; 
 	Vector2D                m_RedCarPos;
 	Vector2D                m_BlueCarPos;
 	//TODO: add acceleration = velocity * time

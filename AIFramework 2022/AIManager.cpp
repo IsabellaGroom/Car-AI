@@ -44,6 +44,8 @@ HRESULT AIManager::initialise(ID3D11Device* pd3dDevice)
     // create the vehicle 
     float xPos = -500; // an abtrirary start point
     float yPos = 300;
+    isWander = false;
+    time = 0.0f;
 
     m_pRedCar = new Vehicle();
     HRESULT hr = m_pRedCar->initMesh(pd3dDevice, carColour::redCar);
@@ -121,19 +123,20 @@ void AIManager::update(const float fDeltaTime)
 
     time += fDeltaTime;
 
-    //if (m_pBlueCar->GetCurrentState() == SEEK)
-    //{
-    //    if (time >= 2.0f)
-    //    {
-    //        Waypoint* waypoint = m_waypointManager.getWaypoint(unsigned int(rand() % m_waypointManager.getWaypointCount() + 1));
+    if (isWander)
+    {
+        if (time >= 2.0f)
+        {
+            Waypoint* waypoint = m_waypointManager.getWaypoint(unsigned int(rand() % m_waypointManager.getWaypointCount() + 1));
 
-    //        if (waypoint != nullptr /*&& hasArrived == true*/)
-    //        {
-    //            m_pBlueCar->setPositionTo(waypoint->getPosition());
-    //        }
-    //        time = 0.0f;
-    //    }
-    //}
+            if (waypoint != nullptr)
+            {
+                m_pRedCar->StateManager(SEEK);
+                m_pRedCar->setPositionTo(waypoint->getPosition());
+            }
+            time = 0.0f;
+        }
+    }
 
 
     // update and draw the car (and check for pickup collisions)
@@ -163,6 +166,7 @@ void AIManager::mouseUp(int x, int y)
     // steering mode
    
     m_pRedCar->setPositionTo(wp->getPosition());
+    m_pRedCar->StateManager(ARRIVE);
 }
 
 void AIManager::keyUp(WPARAM param)
@@ -185,6 +189,7 @@ void AIManager::keyDown(WPARAM param)
 	const WPARAM key_s = 83;
     const WPARAM key_p = 80;
     const WPARAM key_f = 70;
+    const WPARAM key_w = 87;
 
     switch (param)
     {
@@ -226,12 +231,7 @@ void AIManager::keyDown(WPARAM param)
         }
 		case key_p:
 		{ 
-            /*
-            //Distance between two vectors.
-            Vector2D v1(1, 0);
-            Vector2D v2(0, 1);
-            Vector2D v3 = v1 + v2;
-            */
+            
             //Pursuit
            /* attempt at force based seeking
              Vector2D vector = m_RedCarPos + m_BlueCarPos;
@@ -266,6 +266,21 @@ void AIManager::keyDown(WPARAM param)
             //flee
             m_pBlueCar->StateManager(FLEE);
             m_pBlueCar->setPositionTo(m_RedCarPos);
+            break;
+        }
+        case key_w:
+        {
+            //wander
+            isWander = true;
+
+            Waypoint* waypoint = m_waypointManager.getWaypoint(unsigned int(rand() % m_waypointManager.getWaypointCount() + 1));
+
+            if (waypoint != nullptr)
+            {
+                m_pRedCar->StateManager(SEEK);
+                m_pRedCar->setPositionTo(waypoint->getPosition());
+               
+            }
             break;
         }
         case VK_SPACE:
