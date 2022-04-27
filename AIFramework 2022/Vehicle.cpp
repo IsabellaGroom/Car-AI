@@ -25,6 +25,8 @@ HRESULT	Vehicle::initMesh(ID3D11Device* pd3dDevice, carColour colour)
 
 	m_lastPosition = Vector2D(0, 0);
 	m_deltaTime = 0.0f;
+	m_time = 0.0f;
+	m_fuel = 10;
 	return hr;
 }
 
@@ -37,27 +39,18 @@ void Vehicle::update(const float deltaTime)
 	m_deltaTime = deltaTime;
 	m_acceleration = Vector2D(0, 0);
 	m_vecTo = m_positionTo - m_currentPosition;
-	
+	m_time += deltaTime;
+
 	StateManager(m_currentState);
 	float length = (float)m_vecTo.Length();
 	// if the distance to the end point is less than the car would move, then only move that distance. 
 	if (length > 0) {
 		m_vecTo.Normalize();
-		if(length > m_velocity.Length())
+		if (length > m_velocity.Length())
 			m_vecTo *= m_velocity;
 		else
 			m_vecTo *= length;
-
-		if (m_isforce)
-		{
-			m_currentPosition += m_velocity;
-		}
-		else
-		{
-			m_currentPosition += m_vecTo;
-		}
-
-	
+		m_currentPosition += m_velocity;
 	}
 
 	// rotate the object based on its last & current position
@@ -67,7 +60,6 @@ void Vehicle::update(const float deltaTime)
 		m_radianRotation = atan2f((float)diff.y, (float)diff.x); // this is used by DrawableGameObject to set the rotation
 	}
 	m_lastPosition = m_currentPosition;
-
 	// set the current poistion for the drawablegameobject
 	setPosition(Vector2D(m_currentPosition));
 	DrawableGameObject::update(deltaTime);
@@ -76,6 +68,22 @@ void Vehicle::update(const float deltaTime)
 	{
 		seekPath();
 	}
+
+	if (m_time > 3.0f)
+	{
+		m_fuel--;
+		m_time = 0.0f;
+	}
+
+	if (m_fuel <= 0)
+	{
+		setMaxSpeed(10);
+	}
+	else
+	{
+		setMaxSpeed(200);
+	}
+
 
 }
 
@@ -150,16 +158,15 @@ void Vehicle::StateManager(State desiredState)
 		m_isforce = true;
 		Flee();
 		break;
-	case PATH:
-		m_currentState = PATH;
-		m_isforce = false;
-		tempPath();
-		break;
 	case ARRIVE:
 		m_currentState = ARRIVE;
 		m_isforce = true;
 		Arrive();
 		break;
+	case STATIC:
+		m_currentState = STATIC;
+		m_isforce = true;
+		Static();
 	}
 }
 
@@ -182,6 +189,11 @@ void Vehicle::Flee()
 
     m_vecTo = m_positionTo - m_currentPosition;
 	Vector2D force;
+	double magnitude = m_vecTo.Length();
+	if (magnitude > 300.0f)
+	{
+		StateManager(STATIC);
+	}
 
 	m_vecTo.Normalize();
 	Vector2D desiredVelocity = m_vecTo * m_maxSpeed;
@@ -193,12 +205,7 @@ void Vehicle::Flee()
 	m_velocity += m_deltaTime * m_acceleration;
 }
 
-void Vehicle::tempPath()
-{
-	Vector2D vecTo = m_positionTo - m_currentPosition;
-	m_velocity.x += m_deltaTime * m_currentSpeed;
-	m_velocity.y += m_deltaTime * m_currentSpeed;
-}
+
 
 void Vehicle::Arrive()
 {
@@ -219,8 +226,15 @@ void Vehicle::Arrive()
 	desiredVelocity.Normalize();
 	force = desiredVelocity - m_velocity;
 
-	m_acceleration = force / 50.0f;
+	m_acceleration = force / 5.0f;
 	m_acceleration = m_acceleration * 200.0f;
 	m_velocity += m_deltaTime * m_acceleration;
 	
+}
+
+void Vehicle::Static()
+{
+	m_positionTo = m_currentPosition;
+	m_velocity = Vector2D(0, 0);
+	m_acceleration = Vector2D(0,0);
 }

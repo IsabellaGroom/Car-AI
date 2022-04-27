@@ -45,6 +45,8 @@ HRESULT AIManager::initialise(ID3D11Device* pd3dDevice)
     float xPos = -500; // an abtrirary start point
     float yPos = 300;
     isWander = false;
+    isFlee = false;
+    isStrategy = false;
     time = 0.0f;
 
     m_pRedCar = new Vehicle();
@@ -75,10 +77,18 @@ HRESULT AIManager::initialise(ID3D11Device* pd3dDevice)
     m_pickups.push_back(pPickupPassenger);
 
     // NOTE!! for fuel and speedboost - you will need to create these here yourself
+    PickupItem* pPickupFuel = new PickupItem();
+    hr = pPickupFuel->initMesh(pd3dDevice, pickuptype::Fuel);
+    m_pickups.push_back(pPickupFuel);
+
+    PickupItem* pPickupBoost = new PickupItem();
+    hr = pPickupBoost->initMesh(pd3dDevice, pickuptype::SpeedBoost);
+    m_pickups.push_back(pPickupBoost);
 
     // (needs to be done after waypoint setup)
     setRandomPickupPosition(pPickupPassenger);
-
+    setRandomPickupPosition(pPickupFuel);
+    setRandomPickupPosition(pPickupBoost);
     return hr;
 }
 
@@ -138,19 +148,39 @@ void AIManager::update(const float fDeltaTime)
         }
     }
 
+    if (isFlee)
+    {
+        Vector2D vecBetween = m_BlueCarPos - m_RedCarPos;
+        if (vecBetween.Length() < 200)
+        {
+            m_pBlueCar->setPositionTo(m_pRedCar->getPosition());
+            m_pBlueCar->StateManager(FLEE);
+        }
+    }
+
+    if (isStrategy)
+    {
+        if (m_pBlueCar->getCurrentFuel() < 3)
+        {
+            m_pBlueCar->setPositionTo(m_pickups[1]->getPosition());
+        }
+        m_pRedCar->StateManager(STATIC);
+        m_pBlueCar->StateManager(SEEK);
+
+    }
 
     // update and draw the car (and check for pickup collisions)
 	if (m_pRedCar != nullptr)
 	{
 		m_pRedCar->update(fDeltaTime);
-		checkForCollisions();
+		checkForCollisions(m_pRedCar);
 		AddItemToDrawList(m_pRedCar);
 	}
 
     if (m_pBlueCar != nullptr)
     {
         m_pBlueCar->update(fDeltaTime);
-        checkForCollisions();
+        checkForCollisions(m_pBlueCar);
         AddItemToDrawList(m_pBlueCar);
     }
 }
@@ -252,7 +282,7 @@ void AIManager::keyDown(WPARAM param)
             }
            
             m_pRedCar->setPath(path);
-            m_pRedCar->StateManager(PATH);
+            m_pRedCar->StateManager(ARRIVE);
                /* m_pRedCar->setPositionTo(path.back()->getPosition());
                 path.pop_back();*/
             
@@ -264,6 +294,7 @@ void AIManager::keyDown(WPARAM param)
         case key_f:
 		{
             //flee
+            isFlee = true;
             m_pBlueCar->StateManager(FLEE);
             m_pBlueCar->setPositionTo(m_RedCarPos);
             break;
@@ -285,7 +316,8 @@ void AIManager::keyDown(WPARAM param)
         }
         case VK_SPACE:
         {
-            m_pRedCar->setPositionTo(Vector2D(7, -8));
+
+            m_pBlueCar->StateManager(STATIC);
             break;
         }
         // etc
@@ -324,7 +356,7 @@ void AIManager::setRandomPickupPosition(PickupItem* pickup)
 using namespace DirectX; // this means you don't need to put DirectX:: in front of objects like XMVECTOR and so on. 
 */
 
-bool AIManager::checkForCollisions()
+bool AIManager::checkForCollisions(Vehicle* car)
 {
     if (m_pickups.size() == 0)
         return false;
@@ -338,7 +370,7 @@ bool AIManager::checkForCollisions()
         &carScale,
         &dummy,
         &carPos,
-        XMLoadFloat4x4(m_pRedCar->getTransform())
+        XMLoadFloat4x4(car->getTransform())
     );
 
     // create a bounding sphere for the car
@@ -353,31 +385,43 @@ bool AIManager::checkForCollisions()
     // to get the passenger, fuel or speedboost specifically you will need to iterate the pickups and test their type (getType()) - see the pickup class
     XMVECTOR puPos;
     XMVECTOR puScale;
-    XMMatrixDecompose(
-        &puScale,
-        &dummy,
-        &puPos,
-        XMLoadFloat4x4(m_pickups[0]->getTransform())
-    );
 
-    // bounding sphere for pickup item
-    XMStoreFloat3(&scale, puScale);
-    BoundingSphere boundingSpherePU;
-    XMStoreFloat3(&boundingSpherePU.Center, puPos);
-    boundingSpherePU.Radius = scale.x;
-
-	// THIS IS generally where you enter code to test each type of pickup
-    // does the car bounding sphere collide with the pickup bounding sphere?
-    if (boundingSphereCar.Intersects(boundingSpherePU))
+    for (int i = 0; i < m_pickups.size(); i++)
     {
-        OutputDebugStringA("Pickup collision\n");
-        m_pickups[0]->hasCollided();
-        setRandomPickupPosition(m_pickups[0]);
+        XMMatrixDecompose(
+            &puScale,
+            &dummy,
+            &puPos,
+            XMLoadFloat4x4(m_pickups[i]->getTransform())
+        );
 
-        // you will need to test the type of the pickup to decide on the behaviour
-        // m_pCar->dosomething(); ...
+        // bounding sphere for pickup item
+        XMStoreFloat3(&scale, puScale);
+        BoundingSphere boundingSpherePU;
+        XMStoreFloat3(&boundingSpherePU.Center, puPos);
+        boundingSpherePU.Radius = scale.x;
 
-        return true;
+        // THIS IS generally where you enter code to test each type of pickup
+        // does the car bounding sphere collide with the pickup bounding sphere?
+        if (boundingSphereCar.Intersects(boundingSpherePU))
+        {
+            OutputDebugStringA("Pickup collision\n");
+            m_pickups[i]->hasCollided();
+            setRandomPickupPosition(m_pickups[i]);
+
+            // you will need to test the type of the pickup to decide on the behaviour
+            // m_pCar->dosomething(); ...
+            if (m_pickups[i]->getType() == pickuptype::Fuel)
+            {
+                car->IncreaseFuel();
+            }
+            else if (m_pickups[i]->getType() == pickuptype::SpeedBoost)
+            {
+                car->SpeedBoost();
+            }
+
+            return true;
+        }
     }
 
     return false;

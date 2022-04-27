@@ -23,7 +23,7 @@ enum State
 	FLEE,
 	PURSUIT,
 	ARRIVE,
-	PATH,
+	STATIC,
 };
 
 class Vehicle : public DrawableGameObject, public Collidable
@@ -36,18 +36,20 @@ public:
 	const float getMaxSpeed() { return m_maxSpeed; }
 	void setCurrentSpeed(const float speed); // a ratio: a value between 0 and 1 (1 being max speed)
 	void setPositionTo(Vector2D positionTo); // a position to move to
-
+	float getCurrentFuel() { return m_fuel; }
 	void setVehiclePosition(Vector2D position); // the current position - this resets positionTo
 	void setWaypointManager(WaypointManager* wpm);
 	void hasCollided() {}
 	void seekPath();
 	void setPath(std::list<Waypoint*> path);
+	void IncreaseFuel() { m_fuel++; }
+	void SpeedBoost() { m_currentSpeed += 50; }
 
 	//states
 	void Seek();
 	void Flee();
 	void Arrive();
-	void tempPath();
+	void Static();
 	void ArriveTo(Vector2D arrivalPoint); //arrive behaviour
 	void StateManager(State desiredState);
 	State GetCurrentState() { return m_currentState; };
@@ -58,6 +60,8 @@ protected: // protected methods
 protected: // preotected properties
 	float m_maxSpeed;
 	float m_currentSpeed;
+	float m_fuel;
+	float m_time;
 	Vector2D m_velocity;
 	float m_deltaTime;
 	Vector2D m_acceleration;

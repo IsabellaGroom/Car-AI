@@ -24,7 +24,7 @@ public:
 	float heuristic(Waypoint* w1, Waypoint* w2);
 	float time;
 protected:
-	bool	checkForCollisions();
+	bool	checkForCollisions(Vehicle* car);
 	void	setRandomPickupPosition(PickupItem* pickup);
 
 private:
@@ -34,6 +34,8 @@ private:
 	WaypointManager			m_waypointManager;
 	float speed;
 	bool isWander; 
+	bool isFlee;
+	bool isStrategy;
 	Vector2D                m_RedCarPos;
 	Vector2D                m_BlueCarPos;
 	//TODO: add acceleration = velocity * time
