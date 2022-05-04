@@ -28,6 +28,7 @@ HRESULT	Vehicle::initMesh(ID3D11Device* pd3dDevice, carColour colour)
 	m_time = 0.0f;
 	m_fuel = 10;
 	return hr;
+	pathCompleted = false;
 }
 
 void Vehicle::update(const float deltaTime)
@@ -42,6 +43,7 @@ void Vehicle::update(const float deltaTime)
 	m_time += deltaTime;
 
 	StateManager(m_currentState);
+
 	float length = (float)m_vecTo.Length();
 	// if the distance to the end point is less than the car would move, then only move that distance. 
 	if (length > 0) {
@@ -50,7 +52,15 @@ void Vehicle::update(const float deltaTime)
 			m_vecTo *= m_velocity;
 		else
 			m_vecTo *= length;
-		m_currentPosition += m_velocity;
+
+		if (m_isforce)
+		{
+			m_currentPosition += m_velocity;
+		}
+		else
+		{
+			m_currentPosition += m_vecTo;
+		}
 	}
 
 	// rotate the object based on its last & current position
@@ -67,6 +77,11 @@ void Vehicle::update(const float deltaTime)
 	if (!m_path.empty())
 	{
 		seekPath();
+		pathCompleted = false;
+	}
+	else
+	{
+		pathCompleted = true;
 	}
 
 	if (m_time > 3.0f)
@@ -83,8 +98,6 @@ void Vehicle::update(const float deltaTime)
 	{
 		setMaxSpeed(200);
 	}
-
-
 }
 
 
@@ -118,30 +131,20 @@ void Vehicle::setWaypointManager(WaypointManager* wpm)
 	m_waypointManager = wpm;
 }
 
-void Vehicle::ArriveTo(Vector2D arrivalPoint)
-{
-	//TODO: slow down upon arrival
-	m_startPosition = m_currentPosition;
-
-	double length = arrivalPoint.Length();
-	float speed = length * DECCELERATION;
-	m_velocity = m_velocity * speed;
-	//Vector2D vector = ((arrivalPoint * speed) / length)
-	m_positionTo = arrivalPoint;
-}
-
 void Vehicle::seekPath()
 {
-		setPositionTo(m_path.back()->getPosition());
-		if (m_positionTo.Distance(m_currentPosition) < 2.0)
-		{
-			m_path.pop_back();
-		}
+	setPositionTo(m_path.back()->getPosition());
+	if (m_positionTo.Distance(m_currentPosition) < 2.0)
+	{
+		m_path.pop_back();
+	}
+	StateManager(PATH);
 }
 
 void Vehicle::setPath(std::list<Waypoint*> path)
 {
 	m_path = path;
+	seekPath();
 }
 
 void Vehicle::StateManager(State desiredState)
@@ -167,6 +170,12 @@ void Vehicle::StateManager(State desiredState)
 		m_currentState = STATIC;
 		m_isforce = true;
 		Static();
+		break;
+	case PATH:
+		m_currentState = PATH;
+		m_isforce = false;
+		Path();
+		break;
 	}
 }
 
@@ -186,10 +195,10 @@ void Vehicle::Seek()
 
 void Vehicle::Flee()
 {
-
     m_vecTo = m_positionTo - m_currentPosition;
 	Vector2D force;
 	double magnitude = m_vecTo.Length();
+
 	if (magnitude > 300.0f)
 	{
 		StateManager(STATIC);
@@ -219,15 +228,23 @@ void Vehicle::Arrive()
 	Vector2D desiredVelocity = m_vecTo * speed;
 	desiredVelocity = desiredVelocity / magnitude;
 
-	if (magnitude < 10.0f)
+	desiredVelocity.Normalize();
+	desiredVelocity *= m_maxSpeed;
+
+	if (magnitude < 200.0f)
 	{
 		desiredVelocity = Vector2D(0, 0);
+
+		if (magnitude < 10.0f)
+		{
+			m_velocity = Vector2D(0,0);
+		}
 	}
-	desiredVelocity.Normalize();
+
+	
 	force = desiredVelocity - m_velocity;
 
-	m_acceleration = force / 5.0f;
-	m_acceleration = m_acceleration * 200.0f;
+	m_acceleration = force / 100.0f;
 	m_velocity += m_deltaTime * m_acceleration;
 	
 }
@@ -237,4 +254,11 @@ void Vehicle::Static()
 	m_positionTo = m_currentPosition;
 	m_velocity = Vector2D(0, 0);
 	m_acceleration = Vector2D(0,0);
+}
+
+void Vehicle::Path()
+{
+	m_velocity.x = m_deltaTime * m_currentSpeed;
+	m_velocity.y = m_deltaTime * m_currentSpeed;
+
 }

@@ -36,6 +36,7 @@ private:
 	bool isWander; 
 	bool isFlee;
 	bool isStrategy;
+	bool isPath;
 	Vector2D                m_RedCarPos;
 	Vector2D                m_BlueCarPos;
 	//TODO: add acceleration = velocity * time

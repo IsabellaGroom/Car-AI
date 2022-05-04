@@ -21,7 +21,7 @@ enum State
 {
 	SEEK,
 	FLEE,
-	PURSUIT,
+	PATH,
 	ARRIVE,
 	STATIC,
 };
@@ -43,16 +43,18 @@ public:
 	void seekPath();
 	void setPath(std::list<Waypoint*> path);
 	void IncreaseFuel() { m_fuel++; }
-	void SpeedBoost() { m_currentSpeed += 50; }
+	void SpeedBoost() { m_currentSpeed += 100; }
 
 	//states
 	void Seek();
 	void Flee();
 	void Arrive();
 	void Static();
-	void ArriveTo(Vector2D arrivalPoint); //arrive behaviour
+	void Path();
 	void StateManager(State desiredState);
 	State GetCurrentState() { return m_currentState; };
+
+	bool pathCompleted;
 
 protected: // protected methods
 

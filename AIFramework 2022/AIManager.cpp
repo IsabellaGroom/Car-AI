@@ -118,17 +118,17 @@ void AIManager::update(const float fDeltaTime)
     }
 
 
-	// draw the waypoints nearest to the car
-	/*
+    // draw the waypoints nearest to the car
+    /*
     Waypoint* wp = m_waypointManager.getNearestWaypoint(m_pCar->getPosition());
-	if (wp != nullptr)
-	{
-		vecWaypoints vwps = m_waypointManager.getNeighbouringWaypoints(wp);
-		for (Waypoint* wp : vwps)
-		{
-			AddItemToDrawList(wp);
-		}
-	}
+    if (wp != nullptr)
+    {
+        vecWaypoints vwps = m_waypointManager.getNeighbouringWaypoints(wp);
+        for (Waypoint* wp : vwps)
+        {
+            AddItemToDrawList(wp);
+        }
+    }
     */
 
     time += fDeltaTime;
@@ -158,15 +158,51 @@ void AIManager::update(const float fDeltaTime)
         }
     }
 
+    if (isPath)
+    {
+        if (m_pRedCar->pathCompleted)
+        {
+            std::unordered_map<Waypoint*, Waypoint*> came_from;
+            std::list<Waypoint*> path;
+
+            came_from = pathFinding(m_waypointManager.getNearestWaypoint(m_pickups[0]->getPosition()));
+            //list put goal in first
+            Waypoint* traversal = m_waypointManager.getNearestWaypoint(m_pickups[0]->getPosition());
+            while (came_from.at(traversal) != nullptr)
+            {
+                //  AddItemToDrawList(traversal);
+                path.push_back(traversal);
+                traversal = came_from.at(traversal);
+            }
+
+            m_pRedCar->setPath(path);
+            m_pRedCar->StateManager(PATH);
+        }
+    }
+
+
     if (isStrategy)
     {
-        if (m_pBlueCar->getCurrentFuel() < 3)
+        Vector2D disToPassenger = m_pickups[0]->getPosition() - m_pBlueCar->getPosition();
+        Vector2D disToBoost = m_pickups[2]->getPosition() - m_pBlueCar->getPosition();
+        double lengthToPassenger = disToPassenger.Length();
+        double lengthToBoost = disToBoost.Length();
+
+
+        if (m_pBlueCar->getCurrentFuel() < 4)
         {
             m_pBlueCar->setPositionTo(m_pickups[1]->getPosition());
         }
+        else if (lengthToPassenger < lengthToBoost)
+        {
+            m_pBlueCar->setPositionTo(m_pickups[0]->getPosition());
+        }
+        else
+        {
+            m_pBlueCar->setPositionTo(m_pickups[2]->getPosition());
+        }
         m_pRedCar->StateManager(STATIC);
-        m_pBlueCar->StateManager(SEEK);
-
+        m_pBlueCar->StateManager(ARRIVE);
     }
 
     // update and draw the car (and check for pickup collisions)
@@ -220,6 +256,7 @@ void AIManager::keyDown(WPARAM param)
     const WPARAM key_p = 80;
     const WPARAM key_f = 70;
     const WPARAM key_w = 87;
+    const WPARAM key_t = 84;
 
     switch (param)
     {
@@ -235,6 +272,8 @@ void AIManager::keyDown(WPARAM param)
         }
         case key_s:
         {
+            isFlee = false;
+            isStrategy = false;
             Waypoint* waypoint = m_waypointManager.getWaypoint(unsigned int(rand() % m_waypointManager.getWaypointCount() + 1));
 
             if (waypoint != nullptr)
@@ -243,11 +282,12 @@ void AIManager::keyDown(WPARAM param)
                 m_pBlueCar->StateManager(SEEK);
                 m_pBlueCar->setPositionTo(waypoint->getPosition());
             }
-
             break;
         }
         case key_a:
         {
+            isFlee = false;
+            isStrategy = false;
             Waypoint* waypoint = m_waypointManager.getWaypoint(unsigned int(rand() % m_waypointManager.getWaypointCount() + 1));
 
             if (waypoint != nullptr )
@@ -260,14 +300,9 @@ void AIManager::keyDown(WPARAM param)
             break;
         }
 		case key_p:
-		{ 
-            
-            //Pursuit
-           /* attempt at force based seeking
-             Vector2D vector = m_RedCarPos + m_BlueCarPos;
-             m_pRedCar->setPositionTo(vector * m_pRedCar->getMaxSpeed());
-           */
-           
+		{   
+            isWander = false;
+
             std::unordered_map<Waypoint*, Waypoint*> came_from;
             std::list<Waypoint*> path;
             
@@ -280,15 +315,11 @@ void AIManager::keyDown(WPARAM param)
                 path.push_back(traversal);
                 traversal = came_from.at(traversal);
             }
-           
+         
             m_pRedCar->setPath(path);
-            m_pRedCar->StateManager(ARRIVE);
-               /* m_pRedCar->setPositionTo(path.back()->getPosition());
-                path.pop_back();*/
-            
+            m_pRedCar->StateManager(PATH);
 
-
-          //  m_pRedCar->setPositionTo(m_BlueCarPos);
+            isPath = true;
             break;
 		}
         case key_f:
@@ -303,7 +334,7 @@ void AIManager::keyDown(WPARAM param)
         {
             //wander
             isWander = true;
-
+            isPath = false;
             Waypoint* waypoint = m_waypointManager.getWaypoint(unsigned int(rand() % m_waypointManager.getWaypointCount() + 1));
 
             if (waypoint != nullptr)
@@ -316,8 +347,16 @@ void AIManager::keyDown(WPARAM param)
         }
         case VK_SPACE:
         {
-
             m_pBlueCar->StateManager(STATIC);
+            break;
+        }
+        case key_t:
+        {
+            isStrategy = true;
+            isFlee = false;
+            m_pBlueCar->StateManager(SEEK);
+            m_pBlueCar->setPositionTo(m_pickups[0]->getPosition());
+           
             break;
         }
         // etc
